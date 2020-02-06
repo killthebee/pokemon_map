@@ -6,6 +6,10 @@ class Pokemon(models.Model):
     title_jp = models.TextField(null=True, blank=True)
     picture = models.ImageField(null=True, blank=True, upload_to='pokemon_pics/')
     description = models.TextField(null=True, blank=True)
+    previous_evolution = models.ForeignKey("self",
+                                           on_delete=models.SET_NULL,
+                                           null=True,
+                                           blank=True,)
 
     def __str__(self):
         return self.title

@@ -50,20 +50,40 @@ def show_all_pokemons(request):
 
 
 def show_pokemon(request, pokemon_id):
-
-
     pokemon_type = Pokemon.objects.get(pk=pokemon_id)
+    if pokemon_type.previous_evolution:
+        previous_evolution = {
+            'pokemon_id': pokemon_type.previous_evolution.id,
+            'img_url': 'http://127.0.0.1:8000/media/%s'%(pokemon_type.previous_evolution.picture),
+            'title_ru': pokemon_type.previous_evolution.title,
+        }
+    else:
+        previous_evolution = None
+
+    next_evolution_pokemon = pokemon_type.pokemon_set.first()
+    if next_evolution_pokemon:
+        next_evolution= {
+            'pokemon_id': next_evolution_pokemon.id,
+            'img_url': 'http://127.0.0.1:8000/media/%s'%(next_evolution_pokemon.picture),
+            'title_ru': next_evolution_pokemon.title,
+        }
+    else:
+        next_evolution = None
+
     pokemon = {
         'img_url': 'http://127.0.0.1:8000/media/%s'%(pokemon_type.picture),
         'title_ru': pokemon_type.title,
         'description': pokemon_type.description,
         'title_en': pokemon_type.title_en,
         'title_jp': pokemon_type.title_jp,
+        'previous_evolution': previous_evolution,
+        'next_evolution': next_evolution,
     }
+
     requested_pokemons = PokemonEntity.objects.filter(pokemon=pokemon_type)
     folium_map = folium.Map(location=MOSCOW_CENTER, zoom_start=12)
     for pokemon_entity in requested_pokemons:
-        short_image_url = 'http://127.0.0.1:8000/media/%s' % (str(pokemon_entity.pokemon.picture))
+        short_image_url = 'http://127.0.0.1:8000/media/%s'%(str(pokemon_entity.pokemon.picture))
         image_url = request.build_absolute_uri(short_image_url)
         add_pokemon(
             folium_map, pokemon_entity.lat, pokemon_entity.lon,
