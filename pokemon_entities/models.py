@@ -2,7 +2,10 @@ from django.db import models
 
 class Pokemon(models.Model):
     title = models.TextField()
+    title_en = models.TextField(null=True, blank=True)
+    title_jp = models.TextField(null=True, blank=True)
     picture = models.ImageField(null=True, blank=True, upload_to='pokemon_pics/')
+    description = models.TextField(null=True, blank=True)
 
     def __str__(self):
         return self.title
