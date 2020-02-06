@@ -28,7 +28,8 @@ def show_all_pokemons(request):
 
     folium_map = folium.Map(location=MOSCOW_CENTER, zoom_start=12)
     for pokemon_entity in pokemons:
-        image_url = request.build_absolute_uri(pokemon_entity.pokemon.picture.url)
+        image = pokemon_entity.pokemon.picture.url if pokemon_entity.pokemon.picture else DEFAULT_IMAGE_URL
+        image_url = request.build_absolute_uri(image)
         add_pokemon(
             folium_map, pokemon_entity .lat, pokemon_entity .lon,
             pokemon_entity .pokemon, image_url)
@@ -36,9 +37,10 @@ def show_all_pokemons(request):
     pokemons_on_page = []
     pokemons = Pokemon.objects.all()
     for pokemon in pokemons:
+        image = pokemon.picture.url if pokemon.picture else DEFAULT_IMAGE_URL
         pokemons_on_page.append({
             'pokemon_id': pokemon.id,
-            'img_url': pokemon.picture.url,
+            'img_url': image,
             'title_ru': pokemon.title,
         })
 
@@ -51,9 +53,10 @@ def show_all_pokemons(request):
 def show_pokemon(request, pokemon_id):
     pokemon_type = Pokemon.objects.get(pk=pokemon_id)
     if pokemon_type.previous_evolution:
+        image = pokemon_type.picture.url if pokemon_type.picture else DEFAULT_IMAGE_URL
         previous_evolution = {
             'pokemon_id': pokemon_type.previous_evolution.id,
-            'img_url': pokemon_type.previous_evolution.picture.url,
+            'img_url': image,
             'title_ru': pokemon_type.previous_evolution.title,
         }
     else:
@@ -61,16 +64,18 @@ def show_pokemon(request, pokemon_id):
 
     next_evolution_pokemon = pokemon_type.pokemon_set.first()
     if next_evolution_pokemon:
+        image = pokemon_type.picture.url if pokemon_type.picture else DEFAULT_IMAGE_URL
         next_evolution= {
             'pokemon_id': next_evolution_pokemon.id,
-            'img_url': next_evolution_pokemon.picture.url,
+            'img_url': image,
             'title_ru': next_evolution_pokemon.title,
         }
     else:
         next_evolution = None
 
+    image = pokemon_type.picture.url if pokemon_type.picture else DEFAULT_IMAGE_URL
     pokemon = {
-        'img_url': pokemon_type.picture.url,
+        'img_url': image,
         'title_ru': pokemon_type.title,
         'description': pokemon_type.description,
         'title_en': pokemon_type.title_en,
@@ -82,7 +87,8 @@ def show_pokemon(request, pokemon_id):
     requested_pokemons = PokemonEntity.objects.filter(pokemon=pokemon_type)
     folium_map = folium.Map(location=MOSCOW_CENTER, zoom_start=12)
     for pokemon_entity in requested_pokemons:
-        image_url = request.build_absolute_uri(pokemon_entity.pokemon.picture.url)
+        image = pokemon_entity.pokemon.picture.url if pokemon_entity.pokemon.picture else DEFAULT_IMAGE_URL
+        image_url = request.build_absolute_uri(image)
         add_pokemon(
             folium_map, pokemon_entity.lat, pokemon_entity.lon,
             pokemon_entity.pokemon, image_url)
