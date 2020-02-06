@@ -50,21 +50,22 @@ def show_all_pokemons(request):
 
 
 def show_pokemon(request, pokemon_id):
-    with open("pokemon_entities/pokemons.json", encoding="utf-8") as database:
-        pokemons = json.load(database)['pokemons']
 
-    for pokemon in pokemons:
-        if pokemon['pokemon_id'] == int(pokemon_id):
-            requested_pokemon = pokemon
-            break
-    else:
-        return HttpResponseNotFound('<h1>Такой покемон не найден</h1>')
 
+    pokemon_type = Pokemon.objects.get(pk=pokemon_id)
+    pokemon = {
+        'img_url': 'http://127.0.0.1:8000/media/%s'%(pokemon_type.picture),
+        'title_ru': pokemon_type.title,
+
+    }
+    requested_pokemons = PokemonEntity.objects.filter(pokemon=pokemon_type)
     folium_map = folium.Map(location=MOSCOW_CENTER, zoom_start=12)
-    for pokemon_entity in requested_pokemon['entities']:
+    for pokemon_entity in requested_pokemons:
+        short_image_url = 'http://127.0.0.1:8000/media/%s' % (str(pokemon_entity.pokemon.picture))
+        image_url = request.build_absolute_uri(short_image_url)
         add_pokemon(
-            folium_map, pokemon_entity['lat'], pokemon_entity['lon'],
-            pokemon['title_ru'], pokemon['img_url'])
+            folium_map, pokemon_entity.lat, pokemon_entity.lon,
+            pokemon_entity.pokemon, image_url)
 
     return render(request, "pokemon.html", context={'map': folium_map._repr_html_(),
                                                     'pokemon': pokemon})
