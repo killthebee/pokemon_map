@@ -10,7 +10,8 @@ class Pokemon(models.Model):
                                            on_delete=models.SET_NULL,
                                            null=True,
                                            blank=True,
-                                           verbose_name='Покемон-предок')
+                                           verbose_name='Покемон-предок',
+                                           related_name='next_evolution')
 
     def __str__(self):
         return self.title

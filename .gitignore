@@ -92,3 +92,6 @@ media/
 ### PyCharm ###
 .idea
 venv/
+
+### PocMap ###
+pokemons.json
