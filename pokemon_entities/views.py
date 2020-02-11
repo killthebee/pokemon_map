@@ -11,16 +11,37 @@ MOSCOW_CENTER = [55.751244, 37.618423]
 DEFAULT_IMAGE_URL = "https://vignette.wikia.nocookie.net/pokemon/images/6/6e/%21.png/revision/latest/fixed-aspect-ratio-down/width/240/height/240?cb=20130525215832&fill=transparent"
 
 
-def add_pokemon(folium_map, lat, lon, name, image_url=DEFAULT_IMAGE_URL):
+def add_pokemon(stats, folium_map, lat, lon, name, image_url=DEFAULT_IMAGE_URL):
     icon = folium.features.CustomIcon(
         image_url,
         icon_size=(50, 50),
     )
+    popup = folium.Popup(
+        stats,
+        parse_html=True,
+    )
     folium.Marker(
         [lat, lon],
+        popup=popup,
         tooltip=name,
         icon=icon,
     ).add_to(folium_map)
+
+
+def make_stats_popup(pokemon_entity):
+    popup_message = str(pokemon_entity.pokemon)
+    if pokemon_entity.level:
+        popup_message = popup_message + '\n%sLVL'%(pokemon_entity.level)
+    if pokemon_entity.health:
+        popup_message = popup_message + '\n%sHP' % (pokemon_entity.health)
+    if pokemon_entity.strength:
+        popup_message = popup_message + '\n%sSTR' % (pokemon_entity.strength)
+    if pokemon_entity.defence:
+        popup_message = popup_message + '\n%sDFC' % (pokemon_entity.defence)
+    if pokemon_entity.stamina:
+        popup_message = popup_message + '\n%sSTM' % (pokemon_entity.stamina)
+    return popup_message
+
 
 
 def show_all_pokemons(request):
@@ -30,8 +51,10 @@ def show_all_pokemons(request):
     for pokemon_entity in pokemons:
         image = pokemon_entity.pokemon.picture.url if pokemon_entity.pokemon.picture else DEFAULT_IMAGE_URL
         image_url = request.build_absolute_uri(image)
+        # stats = 'LVL:%s; HP:%s; STR:%s; DFC:%s; STM:'
+        stats = make_stats_popup(pokemon_entity)
         add_pokemon(
-            folium_map, pokemon_entity .lat, pokemon_entity .lon,
+            stats, folium_map, pokemon_entity .lat, pokemon_entity .lon,
             pokemon_entity .pokemon, image_url)
 
     pokemons_on_page = []
