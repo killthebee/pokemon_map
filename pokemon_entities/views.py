@@ -99,10 +99,11 @@ def show_pokemon(request, pokemon_id):
         for element in elements:
             img = element.picture.url
             title = element.title
+            strong_against = element.strong_against.all()
             element_type = {
                 'img': img,
                 'title': title,
-
+                'strong_against': strong_against
             }
             element_types.append(element_type)
     else:
