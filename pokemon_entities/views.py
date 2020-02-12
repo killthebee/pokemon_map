@@ -43,7 +43,6 @@ def make_stats_popup(pokemon_entity):
     return popup_message
 
 
-
 def show_all_pokemons(request):
     pokemons = PokemonEntity.objects.all()
 
@@ -51,7 +50,6 @@ def show_all_pokemons(request):
     for pokemon_entity in pokemons:
         image = pokemon_entity.pokemon.picture.url if pokemon_entity.pokemon.picture else DEFAULT_IMAGE_URL
         image_url = request.build_absolute_uri(image)
-        # stats = 'LVL:%s; HP:%s; STR:%s; DFC:%s; STM:'
         stats = make_stats_popup(pokemon_entity)
         add_pokemon(
             stats, folium_map, pokemon_entity .lat, pokemon_entity .lon,
@@ -95,6 +93,20 @@ def show_pokemon(request, pokemon_id):
         }
     else:
         next_evolution = None
+    if pokemon_type.element_type:
+        elements = pokemon_type.element_type.all()
+        element_type = []
+        for element in elements:
+            img = element.picture.url
+            title = element.title
+            element_info = {
+                'img': img,
+                'title': title,
+
+            }
+            element_type.append(element_info)
+    else:
+        element_type = None
 
     image = pokemon_type.picture.url if pokemon_type.picture else DEFAULT_IMAGE_URL
     pokemon = {
@@ -105,6 +117,7 @@ def show_pokemon(request, pokemon_id):
         'title_jp': pokemon_type.title_jp,
         'previous_evolution': previous_evolution,
         'next_evolution': next_evolution,
+        'element_type': element_type,
     }
 
     requested_pokemons = PokemonEntity.objects.filter(pokemon=pokemon_type)
@@ -112,8 +125,9 @@ def show_pokemon(request, pokemon_id):
     for pokemon_entity in requested_pokemons:
         image = pokemon_entity.pokemon.picture.url if pokemon_entity.pokemon.picture else DEFAULT_IMAGE_URL
         image_url = request.build_absolute_uri(image)
+        stats = make_stats_popup(pokemon_entity)
         add_pokemon(
-            folium_map, pokemon_entity.lat, pokemon_entity.lon,
+            stats, folium_map, pokemon_entity.lat, pokemon_entity.lon,
             pokemon_entity.pokemon, image_url)
 
     return render(request, "pokemon.html", context={'map': folium_map._repr_html_(),

@@ -35,7 +35,8 @@ class PokemonEntity(models.Model):
 
 
 class PokemonElementType(models.Model):
-    title = models.CharField(max_length=20, verbose_name='Название стихия')
+    title = models.CharField('Название стихии', max_length=20)
+    picture = models.ImageField('Картинка', null=True, blank=True, upload_to='pokemon_elements/')
 
     def __str__(self):
         return self.title
