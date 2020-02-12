@@ -74,7 +74,7 @@ def show_all_pokemons(request):
 def show_pokemon(request, pokemon_id):
     pokemon_type = Pokemon.objects.get(pk=pokemon_id)
     if pokemon_type.previous_evolution:
-        image = pokemon_type.picture.url if pokemon_type.picture else DEFAULT_IMAGE_URL
+        image = pokemon_type.previous_evolution.picture.url if pokemon_type.previous_evolution.picture else DEFAULT_IMAGE_URL
         previous_evolution = {
             'pokemon_id': pokemon_type.previous_evolution.id,
             'img_url': image,
@@ -85,7 +85,7 @@ def show_pokemon(request, pokemon_id):
 
     next_evolution_pokemon = pokemon_type.next_evolution.first()
     if next_evolution_pokemon:
-        image = pokemon_type.picture.url if pokemon_type.picture else DEFAULT_IMAGE_URL
+        image = next_evolution_pokemon.picture.url if next_evolution_pokemon.picture else DEFAULT_IMAGE_URL
         next_evolution= {
             'pokemon_id': next_evolution_pokemon.id,
             'img_url': image,
@@ -95,18 +95,18 @@ def show_pokemon(request, pokemon_id):
         next_evolution = None
     if pokemon_type.element_type:
         elements = pokemon_type.element_type.all()
-        element_type = []
+        element_types = []
         for element in elements:
             img = element.picture.url
             title = element.title
-            element_info = {
+            element_type = {
                 'img': img,
                 'title': title,
 
             }
-            element_type.append(element_info)
+            element_types.append(element_type)
     else:
-        element_type = None
+        element_types = None
 
     image = pokemon_type.picture.url if pokemon_type.picture else DEFAULT_IMAGE_URL
     pokemon = {
@@ -117,7 +117,7 @@ def show_pokemon(request, pokemon_id):
         'title_jp': pokemon_type.title_jp,
         'previous_evolution': previous_evolution,
         'next_evolution': next_evolution,
-        'element_type': element_type,
+        'element_types': element_types,
     }
 
     requested_pokemons = PokemonEntity.objects.filter(pokemon=pokemon_type)
