@@ -83,7 +83,7 @@ def show_pokemon(request, pokemon_id):
     else:
         previous_evolution = None
 
-    next_evolution_pokemon = pokemon_type.next_evolution.first()
+    next_evolution_pokemon = pokemon_type.next_evolutions.first()
     if next_evolution_pokemon:
         image = next_evolution_pokemon.picture.url if next_evolution_pokemon.picture else DEFAULT_IMAGE_URL
         next_evolution= {

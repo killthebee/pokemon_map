@@ -11,8 +11,8 @@ class Pokemon(models.Model):
                                            null=True,
                                            blank=True,
                                            verbose_name='Покемон-предок',
-                                           related_name='next_evolution')
-    element_type = models.ManyToManyField('PokemonElementType', null=True, blank=True)
+                                           related_name='next_evolutions')
+    element_type = models.ManyToManyField('PokemonElementType', null=True, blank=True, related_name='pokemons')
 
     def __str__(self):
         return self.title
@@ -21,7 +21,7 @@ class Pokemon(models.Model):
 class PokemonEntity(models.Model):
     lat = models.FloatField('Широта')
     lon = models.FloatField('Долгота')
-    pokemon = models.ForeignKey(Pokemon, on_delete=models.CASCADE, verbose_name='Покемон')
+    pokemon = models.ForeignKey(Pokemon, on_delete=models.CASCADE, verbose_name='Покемон', related_name='entities')
     appeared_at = models.DateTimeField('Появиться в', blank=True, default=None, null=True)
     disappear_at = models.DateTimeField('Исчезнет в', blank=True, default=None, null=True)
     level = models.IntegerField('Уровень', blank=True, null=True)
